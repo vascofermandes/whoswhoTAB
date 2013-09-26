@@ -1,6 +1,7 @@
 package com.vfernandes.whoswho;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,11 +10,13 @@ import org.jsoup.select.Elements;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
+import android.app.ListActivity;
 import android.view.Menu;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity {
 
+	private ArrayList<Person> peopleList;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,9 +25,11 @@ public class MainActivity extends Activity {
 		new ParsingHTML().execute();
 	}
 
+	
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+		peopleList = new ArrayList<Person>();
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -38,51 +43,42 @@ public class MainActivity extends Activity {
 		    Document doc;
 		    try {
 		   	 
-		    	// need http protocol
+		    	// get the Html from the website
 				doc = Jsoup.connect("http://theappbusiness.net/people/").get();
-		 
-				// get page title
-				title = doc.title();
-				System.out.println("title : " + title);
 		 
 				// get all data
 				Elements rows = doc.select("div[class=row]");
-				System.out.println("ROWS SIZE : " + rows.size());
+			
+				// get all data
+				Elements images = doc.select("div[class=row] img");
 				
 				//Elements H3
 				Elements h3 = doc.select("div[class=row] h3");
-				System.out.println("H3 SIZE h3: " + h3.size());
 				
 				//Elements P
-				Elements p = doc.select("div[class=row] p");
-				System.out.println("P SIZE p: " + p.size());
+				Elements bios = doc.select("div[class=row] p");
 				//the first is not a person, is about the company
-				p.remove(0);
+				bios.remove(0);
 				
-				Element name;
-				for (int i=0; i<h3.size(); i++) {
-					name = h3.get(i);
-					System.out.println("NAME : " + name.toString());
-					name = h3.get(++i);
-					System.out.println("AREA : " + name.toString());
-
-					//System.out.println("AREA : " + h3.iterator().next().toString());
+				for (int i=0, j=0; i<bios.size(); i++, j++) {
+					Person per = new Person();
+					
+					per.setName(h3.get(j).toString());
+					per.setPosition(h3.get(++j).toString());
+					per.setImageLink(images.get(i).attr("src").toString());
+					per.setBiography(bios.get(i).toString());
+					
+					peopleList.add(per);
 					
 				}
 				
-				String link;
-				for (Element row : rows) {
-					link = row.select("[src]").attr("src");
-					System.out.println("LINK : " + link);
-			
-				}
+				  for(Person per : peopleList){
+					  System.out.println("L_NAME: " + per.getName());
+					  System.out.println("L_POS: " + per.getPosition());
+					  System.out.println("LINK: " + per.getImageLink());
+					  System.out.println("BIO: " + per.getBiography());
+				  }
 				
-				for (Element biography : p) {
-
-					System.out.println("BIOGRAPHY : " + biography.toString());
-				}
-
-		 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -92,7 +88,8 @@ public class MainActivity extends Activity {
 
 		  @Override
 		  protected void onPostExecute(String result) {        
-		   // ((TextView)findViewById (R.id.myTextView)).setText (result);
+		
+			  // ((TextView)findViewById (R.id.myTextView)).setText (result);
 		  }
 		}
 	
