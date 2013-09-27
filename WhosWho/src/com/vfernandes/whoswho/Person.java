@@ -1,11 +1,14 @@
 package com.vfernandes.whoswho;
 
+import android.graphics.Bitmap;
+
 public class Person {
 
 	private String name;
 	private String position;
 	private String biography;
 	private String imageLink;
+	private Bitmap photo;
 	
 	
 	public Person(String name, String position, String biography,
@@ -15,7 +18,7 @@ public class Person {
 		this.position = position;
 		this.biography = biography;
 		this.imageLink = imageLink;
-		
+		this.photo =null;
 	}
 
 
@@ -24,6 +27,7 @@ public class Person {
 		this.position = null;
 		this.biography = null;
 		this.imageLink = null;
+		this.photo = null;
 		
 	
 	}
@@ -66,6 +70,16 @@ public class Person {
 
 	public void setImageLink(String imageLink) {
 		this.imageLink = imageLink;
+	}
+
+
+	public Bitmap getPhoto() {
+		return photo;
+	}
+
+
+	public void setPhoto(Bitmap photo) {
+		this.photo = photo;
 	}
 	
 	
